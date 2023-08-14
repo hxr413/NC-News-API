@@ -4,7 +4,7 @@ const {
 } = require("../models/articles-models");
 
 exports.getArticles = (request, response, next) => {
-  const sort = "created_at ";
+  const sort = "created_at";
   const order = "desc";
 
   selectArticles(sort, order)
@@ -16,7 +16,7 @@ exports.getArticles = (request, response, next) => {
 
 exports.getArticleById = (request, response, next) => {
   const { article_id } = request.params;
-  
+
   selectArticleById(article_id)
     .then((article) => {
       response.status(200).send({ article });

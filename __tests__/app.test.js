@@ -124,7 +124,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comment.created_at).toEqual(expect.any(String));
           expect(comment.author).toEqual(expect.any(String));
           expect(comment.body).toEqual(expect.any(String));
-          expect(comment.article_id).toEqual(expect.any(Number));
+          expect(comment.article_id).toEqual(1);
         });
       });
   });
