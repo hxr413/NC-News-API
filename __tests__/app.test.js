@@ -82,3 +82,49 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET:200 sends an array of comment objects for the specified article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual(expect.any(Array));
+        expect(comments.length).toBe(11);
+        comments.forEach((comment) => {
+          expect(Object.keys(comment).length).toEqual(6);
+          expect(comment.comment_id).toEqual(expect.any(Number));
+          expect(comment.votes).toEqual(expect.any(Number));
+          expect(comment.created_at).toEqual(expect.any(String));
+          expect(comment.author).toEqual(expect.any(String));
+          expect(comment.body).toEqual(expect.any(String));
+          expect(comment.article_id).toEqual(expect.any(Number));
+        });
+      });
+  });
+  test("GET:404 sends an error message when given a existent id with no comments", () => {
+    return request(app)
+      .get("/api/articles/13/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("article has no comments");
+      });
+  });
+  test("GET:404 sends an error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("article does not exist");
+      });
+  });
+  test("GET:400 sends an error message when given an invalid id", () => {
+    return request(app)
+      .get("/api/articles/invalid/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("invalid request");
+      });
+  });
+});
