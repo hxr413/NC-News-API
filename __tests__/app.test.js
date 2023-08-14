@@ -44,6 +44,35 @@ describe("/api/topics", () => {
   });
 });
 
+describe("/api/articles", () => {
+  test("GET:200 sends an array of article objects, sorted by date in descending order by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toEqual(expect.any(Array));
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          expect(Object.keys(article).length).toEqual(8);
+          expect(Object.keys(article)).toEqual(
+            expect.arrayContaining([
+              "article_id",
+              "title",
+              "topic",
+              "author",
+              "created_at",
+              "votes",
+              "article_img_url",
+              "comment_count",
+            ])
+          );
+        });
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
 describe("/api/articles/:article_id", () => {
   test("GET:200 sends the specified article", () => {
     return request(app)
