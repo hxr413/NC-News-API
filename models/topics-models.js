@@ -1,5 +1,12 @@
 const format = require("pg-format");
+const fs = require("node:fs/promises");
 const db = require("../db/connection");
+
+exports.readDoc = () => {
+  return fs.readFile(`${__dirname}/../endpoints.json`, "utf-8").then((data) => {
+    return JSON.parse(data);
+  });
+};
 
 exports.selectTopics = () => {
   return db.query(`SELECT * FROM topics;`).then((result) => {
