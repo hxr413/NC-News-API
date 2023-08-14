@@ -1,4 +1,4 @@
-const { readDoc, selectTopics } = require("../models/topics-models");
+const { selectTopics, selectArticleById } = require("../models/topics-models");
 
 exports.getDoc = (request, response, next) => {
   const doc = require(`${__dirname}/../endpoints.json`);
@@ -10,7 +10,14 @@ exports.getTopics = (request, response, next) => {
     .then((topics) => {
       response.status(200).send({ topics });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch((err) => next(err));
+};
+
+exports.getArticleById = (request, response, next) => {
+  const { article_id } = request.params;
+  selectArticleById(article_id)
+    .then((article) => {
+      response.status(200).send({ article });
+    })
+    .catch((err) => next(err));
 };
