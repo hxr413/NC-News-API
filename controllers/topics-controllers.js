@@ -9,8 +9,8 @@ exports.getTopics = (request, response, next) => {
 };
 
 exports.getArticleById = (request, response, next) => {
-  const { id } = request.params;
-  selectArticleById(id)
+  const { article_id } = request.params;
+  selectArticleById(article_id)
     .then((article) => {
       response.status(200).send({ article });
     })
