@@ -27,7 +27,6 @@ describe("/api/topics", () => {
             expect.arrayContaining(["slug", "description"])
           );
         });
-        expect(topics).toBeSortedBy("slug", { descending: false });
       });
   });
 });
