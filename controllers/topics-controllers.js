@@ -1,13 +1,8 @@
 const { readDoc, selectTopics } = require("../models/topics-models");
 
 exports.getDoc = (request, response, next) => {
-  readDoc()
-    .then((doc) => {
-      response.status(200).send({ doc });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  const doc = require(`${__dirname}/../endpoints.json`);
+  response.status(200).send({ doc });
 };
 
 exports.getTopics = (request, response, next) => {

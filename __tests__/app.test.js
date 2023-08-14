@@ -19,27 +19,8 @@ describe("/api", () => {
       .expect(200)
       .then(({ body }) => {
         const { doc } = body;
-        expect(doc).toEqual(expect.any(Object));
-        // As the number of endpoints increases, this test must be updated as well. Is there a clever way to test this endpoint?
-        expect(Object.keys(doc).length).toEqual(3);
-        expect(Object.keys(doc)).toEqual(
-          expect.arrayContaining([
-            "GET /api",
-            "GET /api/topics",
-            "GET /api/articles",
-          ])
-        );
-        for (const endpoint in doc) {
-          expect(Object.keys(doc[endpoint]).length).toEqual(4);
-          expect(Object.keys(doc[endpoint])).toEqual(
-            expect.arrayContaining([
-              "description",
-              "queries",
-              "requestFormat",
-              "exampleResponse",
-            ])
-          );
-        }
+        const expectedDoc = require(`${__dirname}/../endpoints.json`);
+        expect(doc).toEqual(expectedDoc);
       });
   });
 });
