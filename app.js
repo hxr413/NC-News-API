@@ -1,8 +1,10 @@
 const express = require("express");
 const app = express();
-const { getTopics } = require("./controllers/topics-controllers");
+const { getTopics, getArticleById } = require("./controllers/topics-controllers");
 
 app.get("/api/topics", getTopics);
+
+app.get("/api/articles/:article_id", getArticleById);
 
 app.use((err, request, response, next) => {
   if (err.status) response.status(err.status).send({ message: err.msg });
