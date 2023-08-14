@@ -12,6 +12,19 @@ const {
 beforeEach(() => seed({ articleData, commentData, topicData, userData }));
 afterAll(() => db.end());
 
+describe("/api", () => {
+  test("GET:200 sends an object describing all the available endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const { doc } = body;
+        const expectedDoc = require(`${__dirname}/../endpoints.json`);
+        expect(doc).toEqual(expectedDoc);
+      });
+  });
+});
+
 describe("/api/topics", () => {
   test("GET:200 sends an array of topic objects", () => {
     return request(app)
