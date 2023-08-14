@@ -44,6 +44,31 @@ describe("/api/topics", () => {
   });
 });
 
+describe("/api/articles", () => {
+  test("GET:200 sends an array of article objects, sorted by date in descending order by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toEqual(expect.any(Array));
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          expect(Object.keys(article).length).toEqual(8);
+          expect(article.article_id).toEqual(expect.any(Number));
+          expect(article.title).toEqual(expect.any(String));
+          expect(article.topic).toEqual(expect.any(String));
+          expect(article.author).toEqual(expect.any(String));
+          expect(article.created_at).toEqual(expect.any(String));
+          expect(article.votes).toEqual(expect.any(Number));
+          expect(article.article_img_url).toEqual(expect.any(String));
+          expect(article.comment_count).toEqual(expect.any(String));
+        });
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
 describe("/api/articles/:article_id", () => {
   test("GET:200 sends the specified article", () => {
     return request(app)
