@@ -52,5 +52,11 @@
       "votes": 100,
       "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
     }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "an array of comment objects for the given article_id",
+    "queries": [],
+    "requestFormat": "/api/articles/1/comments",
+    "exampleResponse": {}
   }
 }
