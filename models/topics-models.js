@@ -10,3 +10,7 @@ exports.selectTopics = () => {
     return rows;
   });
 };
+
+exports.selectArticleById = (id) => {
+  
+}

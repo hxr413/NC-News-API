@@ -30,3 +30,22 @@ describe("/api/topics", () => {
       });
   });
 });
+
+describe("/api/topics", () => {
+    test("GET:200 sends an array of topic objects", () => {
+      return request(app)
+        .get("/api/topics")
+        .expect(200)
+        .then(({ body }) => {
+          const { topics } = body;
+          expect(topics).toEqual(expect.any(Array));
+          expect(topics.length).toBe(3);
+          topics.forEach((topic) => {
+            expect(Object.keys(topic).length).toEqual(2);
+            expect(Object.keys(topic)).toEqual(
+              expect.arrayContaining(["slug", "description"])
+            );
+          });
+        });
+    });
+  });
