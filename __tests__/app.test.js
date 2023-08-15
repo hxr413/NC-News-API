@@ -70,41 +70,144 @@ describe("/api/articles", () => {
 });
 
 describe("/api/articles/:article_id", () => {
-  test("GET:200 sends the specified article", () => {
-    return request(app)
-      .get("/api/articles/1")
-      .expect(200)
-      .then(({ body }) => {
-        const { article } = body;
-        const expectedArticle = {
-          article_id: 1,
-          title: "Living in the shadow of a great man",
-          topic: "mitch",
-          author: "butter_bridge",
-          body: "I find this existence challenging",
-          created_at: "2020-07-09T20:11:00.000Z",
-          votes: 100,
-          article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        };
-        expect(article).toEqual(expectedArticle);
-      });
+  describe("GET", () => {
+    test("GET:200 sends the specified article", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          const expectedArticle = {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toEqual(expectedArticle);
+        });
+    });
+    test("GET:404 sends an error message when given a valid but non-existent id", () => {
+      return request(app)
+        .get("/api/articles/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("article does not exist");
+        });
+    });
+    test("GET:400 sends an error message when given an invalid id", () => {
+      return request(app)
+        .get("/api/articles/invalid")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
   });
-  test("GET:404 sends an error message when given a valid but non-existent id", () => {
-    return request(app)
-      .get("/api/articles/999")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("article does not exist");
-      });
-  });
-  test("GET:400 sends an error message when given an invalid id", () => {
-    return request(app)
-      .get("/api/articles/invalid")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("invalid request");
-      });
+  describe("PATCH", () => {
+    test("PATCH:201 increases votes and returns the updated article", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: 50 })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          const expectedArticle = {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 150,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toEqual(expectedArticle);
+        });
+    });
+    test("PATCH:201 decreases votes and returns the updated article", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -50 })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          const expectedArticle = {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 50,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toEqual(expectedArticle);
+        });
+    });
+    test("PATCH:201 changes votes and returns the updated article when given redundant key(s)", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -50, title: "test title", topic: "test" })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          const expectedArticle = {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 50,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toEqual(expectedArticle);
+        });
+    });
+    test("PATCH:404 sends an error message when given a valid but non-existent id", () => {
+      return request(app)
+        .patch("/api/articles/999")
+        .send({ inc_votes: 50 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("article does not exist");
+        });
+    });
+    test("PATCH:400 sends an error message when given an invalid id", () => {
+      return request(app)
+        .patch("/api/articles/invalid")
+        .send({ inc_votes: 50 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
+    test("PATCH:400 sends an error message when given an object with wrong key(s)", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ votes: 50, title: "test title", topic: "test" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("no inc_votes sent");
+        });
+    });
+    test("PATCH:400 sends an error message when given an object with wrong value", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: "fifty" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
   });
 });
 
@@ -166,7 +269,13 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
     test("POST:201 inserts a new comment and returns the posted comment when given a comment object with redundant keys)", () => {
-      const testComment = { username: "lurker", body: "test comment", votes: 50, article_id: 1, time: "now"};
+      const testComment = {
+        username: "lurker",
+        body: "test comment",
+        votes: 50,
+        article_id: 1,
+        time: "now",
+      };
       return request(app)
         .post("/api/articles/1/comments")
         .send(testComment)
