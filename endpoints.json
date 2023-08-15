@@ -2,7 +2,7 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api",
     "queries": [],
-    "requestFormat": "/api",
+    "requestFormat": { "path": "/api" },
     "exampleResponse": {
       "GET /api": {
         "description": "serves up a json representation of all the available endpoints of the api",
@@ -14,7 +14,7 @@
   "GET /api/topics": {
     "description": "serves an array of all topics",
     "queries": [],
-    "requestFormat": "/api/topics",
+    "requestFormat": { "path": "/api/topics" },
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
@@ -22,7 +22,7 @@
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
-    "requestFormat": "/api/users",
+    "requestFormat": { "path": "/api/users" },
     "exampleResponse": {
       "users": [
         {
@@ -35,8 +35,27 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
-    "requestFormat": "/api/articles",
+    "queries": ["topic", "sort_by", "order"],
+    "requestFormat": {
+      "path": [
+        "/api/articles",
+        "/api/articles?topic=mitch",
+        "/api/articles?sort_by=date",
+        "/api/articles??order=desc"
+      ],
+      "sort_by": [
+        "article_id",
+        "title",
+        "topic",
+        "author",
+        "body",
+        "created_at",
+        "date",
+        "votes",
+        "article_img_url"
+      ],
+      "order": ["asc", "desc"]
+    },
     "exampleResponse": {
       "articles": [
         {
@@ -55,7 +74,7 @@
   "GET /api/articles/:article_id": {
     "description": "serves an article object with specified id",
     "queries": [],
-    "requestFormat": "/api/articles/1",
+    "requestFormat": { "path": "/api/articles/1" },
     "exampleResponse": {
       "article_id": 1,
       "title": "Living in the shadow of a great man",
@@ -70,7 +89,10 @@
   "PATCH /api/articles/:article_id": {
     "description": "serves the specified article object with updated votes",
     "queries": [],
-    "requestFormat": ["/api/articles/1", { "inc_votes": 50 }],
+    "requestFormat": {
+      "path": "/api/articles/1",
+      "request": { "inc_votes": 50 }
+    },
     "exampleResponse": {
       "article_id": 1,
       "title": "Living in the shadow of a great man",
@@ -85,7 +107,7 @@
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of comment objects for the given article_id",
     "queries": [],
-    "requestFormat": "/api/articles/1/comments",
+    "requestFormat": { "path": "/api/articles/1/comments" },
     "exampleResponse": [
       {
         "comment_id": 2,
@@ -100,16 +122,16 @@
   "POST /api/articles/:article_id/comments": {
     "description": "insert posted comment into database and serves the inserted comment",
     "queries": [],
-    "requestFormat": [
-      "/api/articles/1/comments",
-      { "username": "existedUser", "body": "comment" }
-    ],
+    "requestFormat": {
+      "path": "/api/articles/1/comments",
+      "request": { "username": "existedUser", "body": "comment" }
+    },
     "exampleResponse": { "comment": "this is a comment" }
   },
   "DELETE /api/comments/:comment_id": {
     "description": "delete specified comment from database",
     "queries": [],
-    "requestFormat": "/api/comments/1",
+    "requestFormat": { "path": "/api/comments/1" },
     "exampleResponse": "no response message"
   }
 }

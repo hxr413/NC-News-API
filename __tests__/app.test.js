@@ -85,6 +85,86 @@ describe("/api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  describe("GET query sort_by", () => {
+    test("GET:200 sends an array of article objects sorted by date", () => {
+      return request(app)
+        .get("/api/articles?sort_by=date")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("GET:200 sends an array of article objects sorted by author", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("author", { descending: true });
+        });
+    });
+    test("GET:400 sends an error message when given an invalid sort_by query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=invalid")
+        .expect(400)
+        .then(({ body }) => {
+          const { message } = body;
+          expect(message).toBe("invalid query of sort_by");
+        });
+    });
+  });
+  describe("GET query order", () => {
+    test("GET:200 sends an array of article objects in asc order", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSorted({ descending: false });
+        });
+    });
+    test("GET:200 sends an array of article objects in desc order", () => {
+      return request(app)
+        .get("/api/articles?order=desc")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSorted({ descending: true });
+        });
+    });
+    test("GET:400 sends an error message when given an invalid order query", () => {
+      return request(app)
+        .get("/api/articles?order=invalid")
+        .expect(400)
+        .then(({ body }) => {
+          const { message } = body;
+          expect(message).toBe("invalid query of order");
+        });
+    });
+  });
+  describe("GET query topic", () => {
+    test("GET:200 sends an array of all articles with given topic", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(12);
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+    });
+    test("GET:404 sends an error message given a topic which no articles have", () => {
+      return request(app)
+        .get("/api/articles?topic=000")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("no article with this topic");
+        });
+    });
+  });
 });
 
 describe("/api/articles/:article_id", () => {

@@ -1,15 +1,46 @@
 const db = require("../db/connection");
 
-exports.selectArticles = (sort, order) => {
-  const selectQuery = `SELECT articles.article_id, title, topic, author, created_at, votes, article_img_url, COALESCE(comments.comment_count, 0) AS comment_count
+exports.selectArticles = (sort, order, topic) => {
+  const acceptedSort = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "date",
+    "votes",
+    "article_img_url",
+  ];
+  if (!acceptedSort.includes(sort)) {
+    return Promise.reject({ status: 400, msg: "invalid query of sort_by" });
+  }
+
+  const acceptedOrder = ["asc", "desc"];
+  if (!acceptedOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "invalid query of order" });
+  }
+
+  const queryValues = [];
+  let baseQuery = `SELECT articles.article_id, title, topic, author, created_at, votes, article_img_url, COALESCE(comments.comment_count, 0) AS comment_count
   FROM articles LEFT JOIN (
     SELECT article_id, COUNT(*) AS comment_count 
     FROM comments GROUP BY article_id
-    ) comments ON articles.article_id = comments.article_id
-  ORDER BY ${sort} ${order};`;
+    ) comments ON articles.article_id = comments.article_id `;
 
-  return db.query(selectQuery).then((result) => {
+  if (topic) {
+    baseQuery += "WHERE topic = $1 ";
+    queryValues.push(topic);
+  }
+
+  if (sort === "date") baseQuery += `ORDER BY created_at ${order};`;
+  else baseQuery += `ORDER BY ${sort} ${order};`;
+
+  return db.query(baseQuery, queryValues).then((result) => {
     const output = result.rows;
+    if (!output[0]) {
+      return Promise.reject({ status: 404, msg: "no article with this topic" });
+    }
     return output;
   });
 };
