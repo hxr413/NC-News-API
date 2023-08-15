@@ -70,7 +70,7 @@ describe("/api/articles", () => {
 });
 
 describe("/api/articles/:article_id", () => {
-  desceibe("GET", () => {
+  describe("GET", () => {
     test("GET:200 sends the specified article", () => {
       return request(app)
         .get("/api/articles/1")
@@ -108,131 +108,232 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
-  describe("PATCH", () => {
-    test("", () => {});
-    // 201: add
-    // 201: minus
-    // 201: too many keys
+  describe.only("PATCH", () => {
+    test("PATCH:201 increases votes and returns the updated article", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: 50 })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          const expectedArticle = {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 150,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toEqual(expectedArticle);
+        });
+    });
+    test("PATCH:201 decreases votes and returns the updated article", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -50 })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          const expectedArticle = {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 50,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toEqual(expectedArticle);
+        });
+    });
+    test("PATCH:201 changes votes and returns the updated article when given redundant key(s)", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -50, title: "test title", topic: "test" })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          const expectedArticle = {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 50,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toEqual(expectedArticle);
+        });
+    });
+    test("PATCH:404 sends an error message when given a valid but non-existent id", () => {
+      return request(app)
+        .patch("/api/articles/999")
+        .send({ inc_votes: 50 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("article does not exist");
+        });
+    });
+    test("PATCH:400 sends an error message when given an invalid id", () => {
+      return request(app)
+        .patch("/api/articles/invalid")
+        .send({ inc_votes: 50 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
+    test("PATCH:400 sends an error message when given an object with wrong key(s)", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ votes: 50, title: "test title", topic: "test" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("no inc_votes sent");
+        });
+    });
+    test("PATCH:400 sends an error message when given an object with wrong value", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: "fifty" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
   });
 });
 
-/* describe("/api/treasures/:treasure_id", () => {
-  test("PATCH:201 update specified treasure's prices and sends the updated treasure back to the client", () => {
-    return request(app)
-      .patch("/api/treasures/1")
-      .send({ price: 69.55 })
-      .expect(201)
-      .then(({ body }) => {
-        expect(body.treasure).toMatchObject({
-          treasure_id: 1,
-          treasure_name: "treasure-a",
-          colour: "turquoise",
-          age: 200,
-          cost_at_auction: 69.55,
-          shop_id: 1,
+describe("/api/articles/:article_id/comments", () => {
+  describe("GET", () => {
+    test("GET:200 sends an array of comment objects for the specified article", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments).toEqual(expect.any(Array));
+          expect(comments.length).toBe(11);
+          comments.forEach((comment) => {
+            expect(Object.keys(comment).length).toEqual(6);
+            expect(comment.comment_id).toEqual(expect.any(Number));
+            expect(comment.votes).toEqual(expect.any(Number));
+            expect(comment.created_at).toEqual(expect.any(String));
+            expect(comment.author).toEqual(expect.any(String));
+            expect(comment.body).toEqual(expect.any(String));
+            expect(comment.article_id).toEqual(1);
+          });
         });
-      });
-  });
-  test("PATCH:201 update specified treasure's prices and sends the updated treasure back to the client, given multiple keys in the input object", () => {
-    return request(app)
-      .patch("/api/treasures/1")
-      .send({ treasure_name: "treasure-a", colour: "turquoise", price: 69.55 })
-      .expect(201)
-      .then(({ body }) => {
-        expect(body.treasure).toMatchObject({
-          treasure_id: 1,
-          treasure_name: "treasure-a",
-          colour: "turquoise",
-          age: 200,
-          cost_at_auction: 69.55,
-          shop_id: 1,
+    });
+    test("GET:404 sends an error message when given a existent id with no comments", () => {
+      return request(app)
+        .get("/api/articles/13/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("article has no comments");
         });
-      });
-  });
-  test("PATCH:400 sends an appropriate error message when client doesn't send a price value", () => {
-    return request(app)
-      .patch("/api/treasures/1")
-      .send({ treasure_name: "treasure-a", colour: "turquoise" })
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("Bad request: no price sent as an object");
-      });
-  });
-  test("PATCH:400 sends an appropriate error message when client doesn't send an object", () => {
-    return (
-      request(app)
-        .patch("/api/treasures/1")
-        // can deal with a string here, but not a number
-        .send("65.99")
+    });
+    test("GET:404 sends an error message when given a valid but non-existent id", () => {
+      return request(app)
+        .get("/api/articles/999/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("article does not exist");
+        });
+    });
+    test("GET:400 sends an error message when given an invalid id", () => {
+      return request(app)
+        .get("/api/articles/invalid/comments")
         .expect(400)
         .then(({ body }) => {
-          expect(body.message).toBe("Bad request: no price sent as an object");
-        })
-    );
-  });
-  test("PATCH:404 sends an appropriate error message hen given a valid but non-existent id", () => {
-    return request(app)
-      .patch("/api/treasures/999")
-      .send({ price: 69.55 })
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("Bad request: treasure does not exist");
-      });
-  });
-  test("PATCH:400 sends an appropriate error message hen given an invalid id", () => {
-    return request(app)
-      .patch("/api/treasures/invalid")
-      .send({ price: 69.55 })
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("Bad request: invalid id");
-      });
-  });
-}); */
-
-describe("/api/articles/:article_id/comments", () => {
-  test("GET:200 sends an array of comment objects for the specified article", () => {
-    return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
-      .then(({ body }) => {
-        const { comments } = body;
-        expect(comments).toEqual(expect.any(Array));
-        expect(comments.length).toBe(11);
-        comments.forEach((comment) => {
-          expect(Object.keys(comment).length).toEqual(6);
-          expect(comment.comment_id).toEqual(expect.any(Number));
-          expect(comment.votes).toEqual(expect.any(Number));
-          expect(comment.created_at).toEqual(expect.any(String));
-          expect(comment.author).toEqual(expect.any(String));
-          expect(comment.body).toEqual(expect.any(String));
-          expect(comment.article_id).toEqual(1);
+          expect(body.message).toBe("invalid request");
         });
-      });
+    });
   });
-  test("GET:404 sends an error message when given a existent id with no comments", () => {
-    return request(app)
-      .get("/api/articles/13/comments")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("article has no comments");
-      });
-  });
-  test("GET:404 sends an error message when given a valid but non-existent id", () => {
-    return request(app)
-      .get("/api/articles/999/comments")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("article does not exist");
-      });
-  });
-  test("GET:400 sends an error message when given an invalid id", () => {
-    return request(app)
-      .get("/api/articles/invalid/comments")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("invalid request");
-      });
+  describe("POST", () => {
+    test("POST:201 inserts a new comment and returns the posted comment", () => {
+      const testComment = { username: "lurker", body: "test comment" };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toEqual({ comment: "test comment" });
+        });
+    });
+    test("POST:201 inserts a new comment and returns the posted comment when given a comment object with redundant keys)", () => {
+      const testComment = {
+        username: "lurker",
+        body: "test comment",
+        votes: 50,
+        article_id: 1,
+        time: "now",
+      };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toEqual({ comment: "test comment" });
+        });
+    });
+    test("POST:404 sends an error message when given a valid but non-existent id", () => {
+      const testComment = { username: "lurker", body: "test comment" };
+      return request(app)
+        .post("/api/articles/999/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("article does not exist");
+        });
+    });
+    test("POST:404 sends an error message when given a non-existent user)", () => {
+      const testComment = { username: "testuser", body: "test comment" };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("user does not exist");
+        });
+    });
+    test("POST:400 sends an error message when given an invalid id", () => {
+      const testComment = { username: "lurker", body: "test comment" };
+      return request(app)
+        .post("/api/articles/invalid/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
+    test("POST:400 sends an error message when given a bad comment object(missing keys)", () => {
+      const testComment = { username: "lurker" };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
+    test("POST:400 sends an error message when given a bad comment object(wrong keys)", () => {
+      const testComment = { usernames: "lurker", bodys: "test comment" };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
   });
 });
 
