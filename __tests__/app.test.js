@@ -165,6 +165,16 @@ describe("/api/articles/:article_id/comments", () => {
           expect(body).toEqual({ comment: "test comment" });
         });
     });
+    test("POST:201 inserts a new comment and returns the posted comment when given a comment object with redundant keys)", () => {
+      const testComment = { username: "lurker", body: "test comment", votes: 50, article_id: 1, time: "now"};
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toEqual({ comment: "test comment" });
+        });
+    });
     test("POST:404 sends an error message when given a valid but non-existent id", () => {
       const testComment = { username: "lurker", body: "test comment" };
       return request(app)
@@ -173,6 +183,16 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe("article does not exist");
+        });
+    });
+    test("POST:404 sends an error message when given a non-existent user)", () => {
+      const testComment = { username: "testuser", body: "test comment" };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("user does not exist");
         });
     });
     test("POST:400 sends an error message when given an invalid id", () => {
@@ -197,16 +217,6 @@ describe("/api/articles/:article_id/comments", () => {
     });
     test("POST:400 sends an error message when given a bad comment object(wrong keys)", () => {
       const testComment = { usernames: "lurker", bodys: "test comment" };
-      return request(app)
-        .post("/api/articles/1/comments")
-        .send(testComment)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.message).toBe("invalid request");
-        });
-    });
-    test("POST:400 sends an error message when given a non existent user)", () => {
-      const testComment = { username: "testuser", body: "test comment" };
       return request(app)
         .post("/api/articles/1/comments")
         .send(testComment)
