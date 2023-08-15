@@ -24,3 +24,14 @@ exports.insertCommentById = (body, id, author) => {
       return output[0];
     });
 };
+
+exports.removeCommentById = (id) => {
+  return db
+    .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *;", [id])
+    .then((result) => {
+      const output = result.rows[0];
+      if (!output) {
+        return Promise.reject({ status: 404, msg: "comment does not exist" });
+      }
+    });
+};
