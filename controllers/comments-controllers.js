@@ -1,6 +1,7 @@
 const {
   selectCommentsById,
   insertCommentById,
+  removeCommentById,
 } = require("../models/comments-models");
 const { checkExists } = require("../db/utils");
 
@@ -26,13 +27,23 @@ exports.postCommentById = (request, response, next) => {
 
   const promises = [
     checkExists("articles", "article_id", article_id),
-    insertCommentById(comment.body, article_id, comment.username)
+    insertCommentById(comment.body, article_id, comment.username),
   ];
 
   Promise.all(promises)
     .then((resolved) => {
       const commentBody = resolved[1].body;
       response.status(201).send({ comment: commentBody });
+    })
+    .catch((err) => next(err));
+};
+
+exports.deleteCommentById = (request, response, next) => {
+  const { comment_id } = request.params;
+
+  removeCommentById(comment_id)
+    .then(() => {
+      response.status(204).send();
     })
     .catch((err) => next(err));
 };
