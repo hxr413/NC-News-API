@@ -1,4 +1,7 @@
-const { selectCommentsById, insertCommentById } = require("../models/comments-models");
+const {
+  selectCommentsById,
+  insertCommentById,
+} = require("../models/comments-models");
 const { checkExists } = require("../db/utils");
 
 exports.getCommentsById = (request, response, next) => {
@@ -6,7 +9,7 @@ exports.getCommentsById = (request, response, next) => {
 
   const promises = [
     checkExists("articles", "article_id", article_id),
-    selectCommentsById(article_id)
+    selectCommentsById(article_id),
   ];
 
   Promise.all(promises)
@@ -17,6 +20,19 @@ exports.getCommentsById = (request, response, next) => {
     .catch((err) => next(err));
 };
 
-exports.postCommentById = () => {
-  insertCommentById()
-}
+exports.postCommentById = (request, response, next) => {
+  const { article_id } = request.params;
+  const comment = request.body;
+
+  const promises = [
+    checkExists("articles", "article_id", article_id),
+    insertCommentById(comment.body, article_id, comment.username)
+  ];
+
+  Promise.all(promises)
+    .then((resolved) => {
+      const commentBody = resolved[1].body;
+      response.status(201).send({ comment: commentBody });
+    })
+    .catch((err) => next(err));
+};
