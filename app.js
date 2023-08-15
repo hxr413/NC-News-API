@@ -1,8 +1,14 @@
 const express = require("express");
 const app = express();
 const { getDoc, getTopics } = require("./controllers/topics-controllers");
-const { getArticles, getArticleById } = require("./controllers/articles-controllers");
-const { getCommentsById } = require("./controllers/comments-controllers");
+const {
+  getArticles,
+  getArticleById,
+} = require("./controllers/articles-controllers");
+const {
+  getCommentsById,
+  postCommentById,
+} = require("./controllers/comments-controllers");
 
 app.get("/api", getDoc);
 
@@ -13,6 +19,11 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles/:article_id/comments", getCommentsById);
+app.post("/api/articles/:article_id/comments", postCommentById);
+
+app.use((request, response) => {
+  response.status(404).send({ message: "path does not exist" });
+});
 
 app.use((err, request, response, next) => {
   // console.log(err, "err in app");
