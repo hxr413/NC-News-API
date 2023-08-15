@@ -152,4 +152,21 @@ describe("/api/articles/:article_id/comments", () => {
         expect(body.message).toBe("invalid request");
       });
   });
+  test("POST:201 inserts a new comment and returns the posted comment", ()=>{
+    
+  })
+});
+
+// POST:201
+// POST:404-article non existent; 400-invalid article id; 400-bad post(comment object)
+
+describe("ALL /not-a-path", () => {
+  test("404 sends an error message for a non-existent path", () => {
+    return request(app)
+      .get("/api/invalid")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("path does not exist")
+      });
+  });
 });
