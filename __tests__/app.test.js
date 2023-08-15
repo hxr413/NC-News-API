@@ -108,7 +108,7 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
-  describe.only("PATCH", () => {
+  describe("PATCH", () => {
     test("PATCH:201 increases votes and returns the updated article", () => {
       return request(app)
         .patch("/api/articles/1")
