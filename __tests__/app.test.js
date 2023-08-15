@@ -35,10 +35,28 @@ describe("/api/topics", () => {
         expect(topics).toEqual(expect.any(Array));
         expect(topics.length).toBe(3);
         topics.forEach((topic) => {
-          expect(Object.keys(topic).length).toEqual(2);
-          expect(Object.keys(topic)).toEqual(
-            expect.arrayContaining(["slug", "description"])
-          );
+          expect(Object.keys(topic).length).toBe(2);
+          expect(topic.slug).toEqual(expect.any(String));
+          expect(topic.description).toEqual(expect.any(String));
+        });
+      });
+  });
+});
+
+describe("/api/users", () => {
+  test("GET:200 sends an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toEqual(expect.any(Array));
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(Object.keys(user).length).toBe(3);
+          expect(user.username).toEqual(expect.any(String));
+          expect(user.name).toEqual(expect.any(String));
+          expect(user.avatar_url).toEqual(expect.any(String));
         });
       });
   });
@@ -54,7 +72,7 @@ describe("/api/articles", () => {
         expect(articles).toEqual(expect.any(Array));
         expect(articles.length).toBe(13);
         articles.forEach((article) => {
-          expect(Object.keys(article).length).toEqual(8);
+          expect(Object.keys(article).length).toBe(8);
           expect(article.article_id).toEqual(expect.any(Number));
           expect(article.title).toEqual(expect.any(String));
           expect(article.topic).toEqual(expect.any(String));
@@ -345,7 +363,7 @@ describe("/api/comments/:comment_id", () => {
     return request(app)
       .delete("/api/comments/999")
       .expect(404)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.message).toBe("comment does not exist");
       });
   });
@@ -353,7 +371,7 @@ describe("/api/comments/:comment_id", () => {
     return request(app)
       .delete("/api/comments/invalid")
       .expect(400)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.message).toBe("invalid request");
       });
   });
