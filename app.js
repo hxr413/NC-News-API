@@ -33,7 +33,6 @@ app.use((request, response) => {
 });
 
 app.use((err, request, response, next) => {
-  console.log(err,"err in app");
   if (err.status) response.status(err.status).send({ message: err.msg });
   else next(err);
 });
