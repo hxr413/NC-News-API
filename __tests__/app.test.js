@@ -152,4 +152,20 @@ describe("/api/articles/:article_id/comments", () => {
         expect(body.message).toBe("invalid request");
       });
   });
+  /* test("POST:201 inserts a new comment and returns the posted comment", () => {
+    const testComment = {
+      username: "testuser",
+      body: "test comment",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(testComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toBe("test comment");
+      });
+  }); */
 });
+
+// POST:201
+// POST:404-article non existent; 400-invalid article id; 400-bad post(comment object)

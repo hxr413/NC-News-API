@@ -21,3 +21,7 @@ exports.selectCommentById = (id) => {
       return output;
     });
 };
+
+exports.insertCommentById = (id) => {
+  return db.query(``)
+}
