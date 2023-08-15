@@ -2,7 +2,11 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
-} = require("../db/seeds/utils");
+  checkExists,
+} = require("../db/utils");
+const db = require("../db/connection");
+
+afterAll(() => db.end());
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -100,5 +104,30 @@ describe("formatComments", () => {
     const comments = [{ created_at: timestamp }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
+  });
+});
+
+describe("async checkExists", () => {
+  test("returns the specified object when column exists", async () => {
+    const table = "articles";
+    const column = "article_id";
+    const value = 1;
+    const result = await checkExists(table, column, value);
+    return db
+      .query("SELECT * FROM articles WHERE article_id = 1;")
+      .then(({ rows }) => {
+        expect(result).toEqual(rows);
+      });
+  });
+  test("returns the error object when column does not exist", async () => {
+    const table = "articles";
+    const column = "article_id";
+    const value = 999;
+    const expected = { status: 404, msg: "article does not exist" };
+    try {
+      await checkExists(table, column, value);
+    } catch (err) {
+      expect(err).toEqual(expected);
+    }
   });
 });

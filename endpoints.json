@@ -54,7 +54,7 @@
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "an array of comment objects for the given article_id",
+    "description": "serves an array of comment objects for the given article_id",
     "queries": [],
     "requestFormat": "/api/articles/1/comments",
     "exampleResponse": [
@@ -67,5 +67,14 @@
         "created_at": "2020-10-31T03:03:00.000Z"
       }
     ]
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "insert posted comment into database and serves the inserted comment",
+    "queries": [],
+    "requestFormat": [
+      "/api/articles/1/comments",
+      { "username": "existedUser", "body": "comment" }
+    ],
+    "exampleResponse": { "comment": "this is a comment" }
   }
 }
