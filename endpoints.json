@@ -44,6 +44,7 @@
         "/api/articles??order=desc"
       ],
       "sort_by": [
+        "article_id",
         "title",
         "topic",
         "author",

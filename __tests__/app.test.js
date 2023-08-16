@@ -121,7 +121,7 @@ describe("/api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles).toBeSorted({ descending: false });
+          expect(articles).toBeSortedBy("created_at", { ascending: true });
         });
     });
     test("GET:200 sends an array of article objects in desc order", () => {
@@ -130,7 +130,7 @@ describe("/api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles).toBeSorted({ descending: true });
+          expect(articles).toBeSortedBy("created_at", { descending: true });
         });
     });
     test("GET:400 sends an error message when given an invalid order query", () => {
@@ -172,7 +172,6 @@ describe("/api/articles", () => {
           expect(response.body.message).toBe("topic does not exist");
         });
     });
-    
   });
 });
 
@@ -199,7 +198,15 @@ describe("/api/articles/:article_id", () => {
           expect(article).toEqual(expectedArticle);
         });
     });
-    // when a article has no comments, comment count is 0
+    test("GET:200 sends 0 comment count when the specified article has no comment", () => {
+      return request(app)
+        .get("/api/articles/2")
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article.comment_count).toBe(0);
+        });
+    });
     test("GET:404 sends an error message when given a valid but non-existent id", () => {
       return request(app)
         .get("/api/articles/999")
