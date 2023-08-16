@@ -156,22 +156,23 @@ describe("/api/articles", () => {
           });
         });
     });
+    test("GET:200 sends an error message given a valid topic which no articles have", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.message).toBe("no article with this topic");
+        });
+    });
     test("GET:404 sends an error message given an invalid topic", () => {
       return request(app)
         .get("/api/articles?topic=000")
         .expect(404)
         .then((response) => {
-          expect(response.body.message).toBe("no article with this topic");
+          expect(response.body.message).toBe("topic does not exist");
         });
     });
-    test("GET:404 sends an error message given a valid topic which no articles have", () => {
-      return request(app)
-        .get("/api/articles?topic=valid")
-        .expect(404)
-        .then((response) => {
-          expect(response.body.message).toBe("no article with this topic");
-        });
-    });
+    
   });
 });
 

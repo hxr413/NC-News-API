@@ -34,7 +34,7 @@ exports.selectArticles = (sort, order, topic) => {
   return db.query(baseQuery, queryValues).then((result) => {
     const output = result.rows;
     if (!output[0]) {
-      return Promise.reject({ status: 404, msg: "no article with this topic" });
+      return Promise.reject({ status: 200, msg: "no article with this topic" });
     }
     return output;
   });
