@@ -80,7 +80,7 @@ describe("/api/articles", () => {
           expect(article.created_at).toEqual(expect.any(String));
           expect(article.votes).toEqual(expect.any(Number));
           expect(article.article_img_url).toEqual(expect.any(String));
-          expect(article.comment_count).toEqual(expect.any(String));
+          expect(article.comment_count).toEqual(expect.any(Number));
         });
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
@@ -178,7 +178,7 @@ describe("/api/articles", () => {
 
 describe("/api/articles/:article_id", () => {
   describe("GET", () => {
-    test("GET:200 sends the specified article", () => {
+    test("GET:200 sends the specified article with correct comment count", () => {
       return request(app)
         .get("/api/articles/1")
         .expect(200)
@@ -194,10 +194,12 @@ describe("/api/articles/:article_id", () => {
             votes: 100,
             article_img_url:
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            comment_count: 11,
           };
           expect(article).toEqual(expectedArticle);
         });
     });
+    // when a article has no comments, comment count is 0
     test("GET:404 sends an error message when given a valid but non-existent id", () => {
       return request(app)
         .get("/api/articles/999")
