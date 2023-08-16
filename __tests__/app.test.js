@@ -88,7 +88,7 @@ describe("/api/articles", () => {
   describe("GET query sort_by", () => {
     test("GET:200 sends an array of article objects sorted by date", () => {
       return request(app)
-        .get("/api/articles?sort_by=date")
+        .get("/api/articles?sort_by=created_at")
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
@@ -156,9 +156,17 @@ describe("/api/articles", () => {
           });
         });
     });
-    test("GET:404 sends an error message given a topic which no articles have", () => {
+    test("GET:404 sends an error message given an invalid topic", () => {
       return request(app)
         .get("/api/articles?topic=000")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("no article with this topic");
+        });
+    });
+    test("GET:404 sends an error message given a valid topic which no articles have", () => {
+      return request(app)
+        .get("/api/articles?topic=valid")
         .expect(404)
         .then((response) => {
           expect(response.body.message).toBe("no article with this topic");
@@ -392,7 +400,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(body.message).toBe("article does not exist");
         });
     });
-    test("POST:404 sends an error message when given a non-existent user)", () => {
+    test("POST:404 sends an error message when given a non-existent user", () => {
       const testComment = { username: "testuser", body: "test comment" };
       return request(app)
         .post("/api/articles/1/comments")

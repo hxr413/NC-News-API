@@ -2,15 +2,11 @@ const db = require("../db/connection");
 
 exports.selectArticles = (sort, order, topic) => {
   const acceptedSort = [
-    "article_id",
     "title",
     "topic",
     "author",
-    "body",
     "created_at",
-    "date",
     "votes",
-    "article_img_url",
   ];
   if (!acceptedSort.includes(sort)) {
     return Promise.reject({ status: 400, msg: "invalid query of sort_by" });
@@ -33,8 +29,7 @@ exports.selectArticles = (sort, order, topic) => {
     queryValues.push(topic);
   }
 
-  if (sort === "date") baseQuery += `ORDER BY created_at ${order};`;
-  else baseQuery += `ORDER BY ${sort} ${order};`;
+  baseQuery += `ORDER BY ${sort} ${order};`;
 
   return db.query(baseQuery, queryValues).then((result) => {
     const output = result.rows;
