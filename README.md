@@ -1,25 +1,57 @@
 # Northcoders News API
 
-This is an Application Programming Interface (API) for accessing data of a news application, including articles, comments, topics and users, with some query options available.
+**This repository contains the backend for a news application.**
 
-[The hosted version](https://nc-news-api-8tl9.onrender.com/)
-Note that the server will correctly display a 404 message for path `/`. Check `endpoints.json` for available paths to make a request to an existing endpoint.
+### [The hosted version](https://nc-news-api-8tl9.onrender.com/)
 
-Description
-This is a back-end project built as part of the Northcoders Software Development Bootcamp course. This project covers various aspects of back-end development including creating a server, building RESTful API, using MVC architecture, retrieving data from database, writing integration tests，handling errors, and deploying the application to the cloud.
-Technology used includes node-postgres, Express.js, PSQL, etc. During the process of development, I also exercised my version control skills using Git, especially in dealing with branches and resolving conflicts.
+### Description
+This project was developed as part of the Northcoders Software Development Bootcamp course, covering various aspects of backend development, such as creating a server, building RESTful APIs, implementing MVC architecture, retrieving data from database, writing integration tests, handling errors, and deploying to the cloud. 
 
-Instructions
-Fork this repository
-Clone your forked repository locally
-Check package.json for available scripts
+### Technology & versions used for developemnt
+- Node.js: v20.2.0
+- PostgreSQL (PSQL): v14.7
+- Express.js
+- node-postgres (library for interacting with PostgreSQL)
+- etc.
 
-- Run `npm install` to install all the dependencies
-- Run `npm run setup-dbs` to set up the databases
-- Run `npm run seed` to seed local databases
-- Run `npm test` to test the functionality of endpoints
-- Remember to check out `.env-example` and create your own `.env.test` and `.env.developement` files with the correct database names for each environment (see `/db/setup.sql` for the database names).
+Throughout the development process, version control was managed using Git. This included practices like branching and resolving merge conflicts.
 
-Minimum versions of Node.js, and Postgres needed to run the project:
+### Instructions
+1. **Fork and Clone:**
+    - Fork this repository to your GitHub account.
+    - Clone your forked repository locally.
 
-Credits
+2. **Install Dependencies:** Run the following command to install all the required dependencies
+    ```
+    npm install
+    ```
+
+3. **Database Setup:**
+    - Check `package.json` for available scripts.
+    - Run the following command to set up the databases.
+      ```
+      npm run setup-dbs
+      ```
+    - Use`.env-example` to create your own `.env.test` and `.env.developement` files with the correct database names for each environment (see `/db/setup.sql` for the database names).
+
+4. **Seed the Databases:** Run the following command to seed the local databases
+    ```
+    npm run setup-dbs
+    ```
+
+5. **Run Tests:** Run the following command to test the functionality of endpoints
+    ```
+    npm test
+    ```
+
+6. **Start the server using:**
+    ```
+    npm start
+    ```
+    - By default, the server will correctly display a 404 message for the root path `/`. To explore available endpoints, refer to `endpoints.json`.
+
+### Credits
+The `db` folder, which includes the database setup, was provided as part of the project. The `checkExists` function in `utils.js` and its corresponding tests in `utils.test.js` were implemented by me.
+
+### License
+This project is licensed under the [MIT license](https://opensource.org/license/mit/).
