@@ -1,35 +1,10 @@
 const express = require("express");
 const app = express();
-const { getDoc, getTopics } = require("./controllers/topics-controllers");
-const {
-  getArticles,
-  getArticleById,
-  patchArticleById,
-} = require("./controllers/articles-controllers");
-const {
-  getCommentsById,
-  postCommentById,
-  deleteCommentById,
-} = require("./controllers/comments-controllers");
-const { getUsers } = require("./controllers/users-controllers");
+const apiRouter = require("./routes/api-routers");
 
 app.use(express.json());
 
-app.get("/api", getDoc);
-
-app.get("/api/topics", getTopics);
-
-app.get("/api/users", getUsers);
-
-app.get("/api/articles", getArticles);
-
-app.get("/api/articles/:article_id", getArticleById);
-app.patch("/api/articles/:article_id", patchArticleById);
-
-app.get("/api/articles/:article_id/comments", getCommentsById);
-app.post("/api/articles/:article_id/comments", postCommentById);
-
-app.delete("/api/comments/:comment_id", deleteCommentById);
+app.use("/api", apiRouter);
 
 app.use((request, response) => {
   response.status(404).send({ message: "path does not exist" });
