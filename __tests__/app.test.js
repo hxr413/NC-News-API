@@ -624,24 +624,123 @@ describe("/api/articles/:article_id/comments", () => {
 });
 
 describe("/api/comments/:comment_id", () => {
-  test("DELETE:204 deletes the specified comment and sends no body back", () => {
-    return request(app).delete("/api/comments/1").expect(204);
+  describe("DELETE", () => {
+    test("DELETE:204 deletes the specified comment and sends no body back", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+    test("DELETE:404 responds with an error message when given a non-existent id", () => {
+      return request(app)
+        .delete("/api/comments/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("comment does not exist");
+        });
+    });
+    test("DELETE:400 responds with an error message when given an invalid id", () => {
+      return request(app)
+        .delete("/api/comments/invalid")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
   });
-  test("DELETE:404 responds with an error message when given a non-existent id", () => {
-    return request(app)
-      .delete("/api/comments/999")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("comment does not exist");
-      });
-  });
-  test("DELETE:400 responds with an error message when given an invalid id", () => {
-    return request(app)
-      .delete("/api/comments/invalid")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("invalid request");
-      });
+  describe("PATCH", () => {
+    test("PATCH:201 increases votes and returns the updated comment", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: 5 })
+        .expect(201)
+        .then(({ body }) => {
+          const { comment } = body;
+          const expectedComment = {
+            comment_id: 1,
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            article_id: 9,
+            author: "butter_bridge",
+            votes: 21,
+            created_at: "2020-04-06T12:17:00.000Z",
+          };
+          expect(comment).toEqual(expectedComment);
+        });
+    });
+    test("PATCH:201 decreases votes and returns the updated comment", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: -5 })
+        .expect(201)
+        .then(({ body }) => {
+          const { comment } = body;
+          const expectedComment = {
+            comment_id: 1,
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            article_id: 9,
+            author: "butter_bridge",
+            votes: 11,
+            created_at: "2020-04-06T12:17:00.000Z",
+          };
+          expect(comment).toEqual(expectedComment);
+        });
+    });
+    test("PATCH:201 changes votes and returns the updated comment when given redundant key(s)", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({
+          inc_votes: -5,
+          body: "test comment",
+          author: "test",
+          votes: 16,
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { comment } = body;
+          const expectedComment = {
+            comment_id: 1,
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            article_id: 9,
+            author: "butter_bridge",
+            votes: 11,
+            created_at: "2020-04-06T12:17:00.000Z",
+          };
+          expect(comment).toEqual(expectedComment);
+        });
+    });
+    test("PATCH:404 sends an error message when given a valid but non-existent id", () => {
+      return request(app)
+        .patch("/api/comments/999")
+        .send({ inc_votes: 5 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("comment does not exist");
+        });
+    });
+    test("PATCH:400 sends an error message when given an invalid id", () => {
+      return request(app)
+        .patch("/api/comments/invalid")
+        .send({ inc_votes: 5 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
+    test("PATCH:400 sends an error message when given an object with wrong key(s)", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ votes: 5, body: "test comment", author: "test" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("no inc_votes sent");
+        });
+    });
+    test("PATCH:400 sends an error message when given an object with wrong value", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_votes: "fifty" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
   });
 });
 

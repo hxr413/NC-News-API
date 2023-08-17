@@ -101,10 +101,7 @@ exports.updateArticleById = (votesChange, id) => {
   return db.query(updateQuery, queryValues).then((result) => {
     const output = result.rows;
     if (!output[0]) {
-      return Promise.reject({
-        status: 404,
-        msg: "article does not exist",
-      });
+      return Promise.reject({ status: 404, msg: "article does not exist" });
     }
     return output[0];
   });
