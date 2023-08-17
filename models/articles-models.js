@@ -51,10 +51,7 @@ exports.insertArticle = async (article) => {
 
   for (const value of queryValues) {
     if (!value) {
-      return Promise.reject({
-        status: 400,
-        msg: "invalid request",
-      });
+      return Promise.reject({ status: 400, msg: "invalid request" });
     }
   }
 

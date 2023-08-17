@@ -200,6 +200,7 @@ describe("/api/articles", () => {
           });
       });
     });
+    // describe("GET query pagination(limit, p, total_count)")
   });
   describe("POST", () => {
     test("POST:201 inserts a new article and returns the posted article with comment_comment", () => {
