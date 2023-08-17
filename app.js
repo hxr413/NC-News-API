@@ -11,6 +11,7 @@ app.use((request, response) => {
 });
 
 app.use((err, request, response, next) => {
+  console.log(err, "<<<app");
   if (err.status) response.status(err.status).send({ message: err.msg });
   else next(err);
 });
@@ -22,9 +23,12 @@ app.use((err, request, response, next) => {
 });
 
 app.use((err, request, response, next) => {
-  if (err.code === "23503" && err.detail.includes("Key (author)"))
-    response.status(404).send({ message: "user does not exist" });
-  else next(err);
+  if (err.code === "23503") {
+    if (err.detail.includes("Key (author)"))
+      response.status(404).send({ message: "user does not exist" });
+    if (err.detail.includes("Key (topic)"))
+      response.status(404).send({ message: "topic does not exist" });
+  } else next(err);
 });
 
 app.use((err, request, response, next) => {

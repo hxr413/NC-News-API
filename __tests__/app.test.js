@@ -63,113 +63,257 @@ describe("/api/users", () => {
 });
 
 describe("/api/articles", () => {
-  test("GET:200 sends an array of article objects, sorted by date in descending order by default", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(articles).toEqual(expect.any(Array));
-        expect(articles.length).toBe(13);
-        articles.forEach((article) => {
-          expect(Object.keys(article).length).toBe(8);
-          expect(article.article_id).toEqual(expect.any(Number));
-          expect(article.title).toEqual(expect.any(String));
-          expect(article.topic).toEqual(expect.any(String));
-          expect(article.author).toEqual(expect.any(String));
-          expect(article.created_at).toEqual(expect.any(String));
-          expect(article.votes).toEqual(expect.any(Number));
-          expect(article.article_img_url).toEqual(expect.any(String));
-          expect(article.comment_count).toEqual(expect.any(Number));
-        });
-        expect(articles).toBeSortedBy("created_at", { descending: true });
-      });
-  });
-  describe("GET query sort_by", () => {
-    test("GET:200 sends an array of article objects sorted by date", () => {
+  describe("GET", () => {
+    test("GET:200 sends an array of article objects, sorted by date in descending order by default", () => {
       return request(app)
-        .get("/api/articles?sort_by=created_at")
+        .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
           const { articles } = body;
-          expect(articles).toBeSortedBy("created_at", { descending: true });
-        });
-    });
-    test("GET:200 sends an array of article objects sorted by author", () => {
-      return request(app)
-        .get("/api/articles?sort_by=author")
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles).toBeSortedBy("author", { descending: true });
-        });
-    });
-    test("GET:400 sends an error message when given an invalid sort_by query", () => {
-      return request(app)
-        .get("/api/articles?sort_by=invalid")
-        .expect(400)
-        .then(({ body }) => {
-          const { message } = body;
-          expect(message).toBe("invalid query of sort_by");
-        });
-    });
-  });
-  describe("GET query order", () => {
-    test("GET:200 sends an array of article objects in asc order", () => {
-      return request(app)
-        .get("/api/articles?order=asc")
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles).toBeSortedBy("created_at", { ascending: true });
-        });
-    });
-    test("GET:200 sends an array of article objects in desc order", () => {
-      return request(app)
-        .get("/api/articles?order=desc")
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles).toBeSortedBy("created_at", { descending: true });
-        });
-    });
-    test("GET:400 sends an error message when given an invalid order query", () => {
-      return request(app)
-        .get("/api/articles?order=invalid")
-        .expect(400)
-        .then(({ body }) => {
-          const { message } = body;
-          expect(message).toBe("invalid query of order");
-        });
-    });
-  });
-  describe("GET query topic", () => {
-    test("GET:200 sends an array of all articles with given topic", () => {
-      return request(app)
-        .get("/api/articles?topic=mitch")
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(articles.length).toBe(12);
+          expect(articles).toEqual(expect.any(Array));
+          expect(articles.length).toBe(13);
           articles.forEach((article) => {
-            expect(article.topic).toBe("mitch");
+            expect(Object.keys(article).length).toBe(8);
+            expect(article.article_id).toEqual(expect.any(Number));
+            expect(article.title).toEqual(expect.any(String));
+            expect(article.topic).toEqual(expect.any(String));
+            expect(article.author).toEqual(expect.any(String));
+            expect(article.created_at).toEqual(expect.any(String));
+            expect(article.votes).toEqual(expect.any(Number));
+            expect(article.article_img_url).toEqual(expect.any(String));
+            expect(article.comment_count).toEqual(expect.any(Number));
           });
+          expect(articles).toBeSortedBy("created_at", { descending: true });
         });
     });
-    test("GET:200 sends an error message given a valid topic which no articles have", () => {
+    describe("GET query sort_by", () => {
+      test("GET:200 sends an array of article objects sorted by date", () => {
+        return request(app)
+          .get("/api/articles?sort_by=created_at")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSortedBy("created_at", { descending: true });
+          });
+      });
+      test("GET:200 sends an array of article objects sorted by author", () => {
+        return request(app)
+          .get("/api/articles?sort_by=author")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSortedBy("author", { descending: true });
+          });
+      });
+      test("GET:400 sends an error message when given an invalid sort_by query", () => {
+        return request(app)
+          .get("/api/articles?sort_by=invalid")
+          .expect(400)
+          .then(({ body }) => {
+            const { message } = body;
+            expect(message).toBe("invalid query of sort_by");
+          });
+      });
+    });
+    describe("GET query order", () => {
+      test("GET:200 sends an array of article objects in asc order", () => {
+        return request(app)
+          .get("/api/articles?order=asc")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSortedBy("created_at", { ascending: true });
+          });
+      });
+      test("GET:200 sends an array of article objects in desc order", () => {
+        return request(app)
+          .get("/api/articles?order=desc")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSortedBy("created_at", { descending: true });
+          });
+      });
+      test("GET:400 sends an error message when given an invalid order query", () => {
+        return request(app)
+          .get("/api/articles?order=invalid")
+          .expect(400)
+          .then(({ body }) => {
+            const { message } = body;
+            expect(message).toBe("invalid query of order");
+          });
+      });
+    });
+    describe("GET query topic", () => {
+      test("GET:200 sends an array of all articles with given topic", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(12);
+            articles.forEach((article) => {
+              expect(article.topic).toBe("mitch");
+            });
+          });
+      });
+      test("GET:200 sends an error message given a valid topic which no articles have", () => {
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.message).toBe("no article with this topic");
+          });
+      });
+      test("GET:404 sends an error message given an invalid topic", () => {
+        return request(app)
+          .get("/api/articles?topic=000")
+          .expect(404)
+          .then((response) => {
+            expect(response.body.message).toBe("topic does not exist");
+          });
+      });
+    });
+  });
+  describe("POST", () => {
+    test("POST:201 inserts a new article and returns the posted article with comment_comment", () => {
+      const testArticle = {
+        title: "test title",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "test body",
+        article_img_url: "https://test.img.com",
+      };
       return request(app)
-        .get("/api/articles?topic=paper")
-        .expect(200)
-        .then((response) => {
-          expect(response.body.message).toBe("no article with this topic");
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(Object.keys(article).length).toEqual(9);
+          expect(article).toMatchObject(testArticle);
+          expect(article.article_id).toEqual(14);
+          expect(article.votes).toEqual(0);
+          expect(article.comment_count).toEqual(0);
+          expect(article.created_at).toEqual(expect.any(String));
         });
     });
-    test("GET:404 sends an error message given an invalid topic", () => {
+    test("POST:201 inserts a new article and returns the posted article with default url when given no url", () => {
+      const testArticle = {
+        title: "test title",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "test body",
+      };
       return request(app)
-        .get("/api/articles?topic=000")
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(Object.keys(article).length).toEqual(9);
+          expect(article).toMatchObject(testArticle);
+          expect(article.article_id).toEqual(14);
+          expect(article.votes).toEqual(0);
+          expect(article.comment_count).toEqual(0);
+          expect(article.article_img_url).toEqual(
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700"
+          );
+          expect(article.created_at).toEqual(expect.any(String));
+        });
+    });
+    test("POST:201 inserts a new article and returns the posted article when given an article object with redundant keys", () => {
+      const testArticle = {
+        title: "test title",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "test body",
+        article_img_url: "https://test.img.com",
+        article_id: 999,
+        votes: 900,
+        comment_count: 899,
+      };
+      const expectArticle = {
+        title: "test title",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "test body",
+        article_img_url: "https://test.img.com",
+        article_id: 14,
+        votes: 0,
+        comment_count: 0,
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(Object.keys(article).length).toEqual(9);
+          expect(article).toMatchObject(expectArticle);
+          expect(article.created_at).toEqual(expect.any(String));
+        });
+    });
+    test("POST:404 sends an error message with non-existent topic", () => {
+      const testArticle = {
+        title: "test title",
+        topic: "test",
+        author: "icellusedkars",
+        body: "test body",
+        article_img_url: "https://test.img.com",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
         .expect(404)
-        .then((response) => {
-          expect(response.body.message).toBe("topic does not exist");
+        .then(({ body }) => {
+          expect(body.message).toBe("topic does not exist");
+        });
+    });
+    test("POST:404 sends an error message with non-existent user", () => {
+      const testArticle = {
+        title: "test title",
+        topic: "mitch",
+        author: "test_user",
+        body: "test body",
+        article_img_url: "https://test.img.com",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("user does not exist");
+        });
+    });
+    test("POST:400 sends an error message when given a bad article object(missing keys)", () => {
+      const testArticle = {
+        topic: "mitch",
+        author: "icellusedkars",
+        article_img_url: "https://test.img.com",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
+    test("POST:400 sends an error message when given a bad article object(wrong keys)", () => {
+      const testArticle = {
+        titles: "test title",
+        topic: "mitch",
+        author: "icellusedkars",
+        bodys: "test body",
+        url: "https://test.img.com",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(testArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
         });
     });
   });
@@ -384,7 +528,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(body).toEqual({ comment: "test comment" });
         });
     });
-    test("POST:201 inserts a new comment and returns the posted comment when given a comment object with redundant keys)", () => {
+    test("POST:201 inserts a new comment and returns the posted comment when given a comment object with redundant keys", () => {
       const testComment = {
         username: "lurker",
         body: "test comment",
