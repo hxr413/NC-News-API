@@ -41,6 +41,38 @@ exports.selectArticles = (sort, order, topic) => {
   });
 };
 
+exports.insertArticle = async (article) => {
+  const queryValues = [
+    article.title,
+    article.topic,
+    article.author,
+    article.body,
+  ];
+
+  for (const value of queryValues) {
+    if (!value) {
+      return Promise.reject({
+        status: 400,
+        msg: "invalid request",
+      });
+    }
+  }
+
+  let insertQuery = `INSERT INTO articles (title, topic, author, body)
+  VALUES ($1, $2, $3, $4) RETURNING *`;
+
+  if (article.article_img_url) {
+    queryValues.push(article.article_img_url);
+    insertQuery = `INSERT INTO articles (title, topic, author, body, article_img_url)
+    VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+  }
+
+  const { rows } = await db.query(insertQuery, queryValues);
+  const postArticle = rows[0];
+  postArticle.comment_count = 0;
+  return postArticle;
+};
+
 exports.selectArticleById = (id) => {
   const selectQuery = `SELECT articles.article_id, title, topic, author, body, created_at, votes, article_img_url, COALESCE(comments.comment_count::integer, 0) AS comment_count
   FROM articles LEFT JOIN (

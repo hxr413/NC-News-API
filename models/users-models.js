@@ -6,3 +6,15 @@ exports.selectUsers = (sort, order) => {
     return output;
   });
 };
+
+exports.selectUserByName = (username) => {
+  const selectQuery = "SELECT * FROM users WHERE username = $1";
+
+  return db.query(selectQuery, [username]).then((result) => {
+    const output = result.rows[0];
+    if (!output) {
+      return Promise.reject({ status: 404, msg: "user does not exist" });
+    }
+    return output;
+  });
+};

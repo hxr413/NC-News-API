@@ -48,7 +48,7 @@ Throughout the development process, version control was managed using Git. This 
     ```
     npm start
     ```
-    - By default, the server will currectly display a 404 message for the root path `/`. To explore available endpoints, refer to `endpoints.json`.
+    - By default, the server will currectly display a 404 message for the root path `/`. To explore available endpoints, refer to `/api`.
 
 ### Credits
 The `db` folder, which includes the database setup, was provided as part of the project. The `checkExists` function in `utils.js` and its corresponding tests in `utils.test.js` were implemented by me.
