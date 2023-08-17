@@ -24,7 +24,7 @@ exports.getArticles = (request, response, next) => {
     response.status(400).send({ message: "invalid query of page" });
   }
 
-  const total_count = request.query.total_count;
+  const total_count = request.query.total_count || 50;
   const limit = parseInt(reqLimit) || 10;
   const page = parseInt(reqPage) || 1;
   const offset = (page - 1) * limit;

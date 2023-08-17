@@ -655,6 +655,88 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe("GET query pagination(limit, p)", () => {
+    test("GET:200 sends an array of paginated comments with default limit", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=1")
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body, "test")
+          const { comments } = body;
+          expect(comments.length).toBe(10);
+        });
+    });
+    test("GET:200 sends an array of paginated comments as queried", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5&p=2")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments.length).toBe(5);
+          expect(comments[0].comment_id).toBe(7);
+        });
+    });
+    test("GET:200 sends an array of paginated comments with float limit and page", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5.5&p=2.5")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments.length).toBe(5);
+          expect(comments[0].comment_id).toBe(7);
+        });
+    });
+    test("GET:200 sends an empty array when page is beyond available data", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=100")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments.length).toBe(0);
+        });
+    });
+    test("GET:200 sends an array all comments when limit is greater then total number of comments", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=100")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments.length).toBe(11);
+        });
+    });
+    test("GET:400 sends an error message given an invalid limit (not a number)", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=invalid")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.message).toBe("invalid query of limit");
+        });
+    });
+    test("GET:400 sends an error message given an invalid limit (negative number or 0)", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=-10")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.message).toBe("invalid query of limit");
+        });
+    });
+    test("GET:400 sends an error message given an invalid page (not a number)", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=invalid")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.message).toBe("invalid query of page");
+        });
+    });
+    test("GET:400 sends an error message given an invalid page (negative number or 0)", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=-1")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.message).toBe("invalid query of page");
+        });
+    });
+  });
   describe("POST", () => {
     test("POST:201 inserts a new comment and returns the posted comment", () => {
       const testComment = { username: "lurker", body: "test comment" };
