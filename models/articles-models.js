@@ -48,7 +48,7 @@ exports.selectArticleById = (id) => {
     FROM comments GROUP BY article_id
     ) comments ON articles.article_id = comments.article_id
     WHERE articles.article_id = $1;`;
-    
+
   return db.query(selectQuery, [id]).then((result) => {
     const output = result.rows[0];
     if (!output) {
@@ -69,10 +69,7 @@ exports.updateArticleById = (votesChange, id) => {
   return db.query(updateQuery, queryValues).then((result) => {
     const output = result.rows;
     if (!output[0]) {
-      return Promise.reject({
-        status: 404,
-        msg: "article does not exist",
-      });
+      return Promise.reject({ status: 404, msg: "article does not exist" });
     }
     return output[0];
   });

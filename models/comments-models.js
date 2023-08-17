@@ -35,3 +35,20 @@ exports.removeCommentById = (id) => {
       }
     });
 };
+
+exports.updateCommentById = (votesChange, id) => {
+  if (!votesChange) {
+    return Promise.reject({ status: 400, msg: "no inc_votes sent" });
+  }
+
+  const updateQuery = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;`;
+  const queryValues = [votesChange, id];
+
+  return db.query(updateQuery, queryValues).then((result) => {
+    const output = result.rows;
+    if (!output[0]) {
+      return Promise.reject({ status: 404, msg: "comment does not exist" });
+    }
+    return output[0];
+  });
+};

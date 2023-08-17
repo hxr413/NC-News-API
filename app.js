@@ -10,6 +10,7 @@ const {
   getCommentsById,
   postCommentById,
   deleteCommentById,
+  patchCommentById,
 } = require("./controllers/comments-controllers");
 const { getUsers } = require("./controllers/users-controllers");
 
@@ -30,6 +31,7 @@ app.get("/api/articles/:article_id/comments", getCommentsById);
 app.post("/api/articles/:article_id/comments", postCommentById);
 
 app.delete("/api/comments/:comment_id", deleteCommentById);
+app.patch("/api/comments/:comment_id", patchCommentById);
 
 app.use((request, response) => {
   response.status(404).send({ message: "path does not exist" });
