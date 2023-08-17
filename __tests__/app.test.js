@@ -62,6 +62,32 @@ describe("/api/users", () => {
   });
 });
 
+describe("/api/users/:username", () => {
+  test("GET:200 sends the specified user", () => {
+    return request(app)
+      .get("/api/users/lurker")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        const expectedUser = {
+          username: "lurker",
+          name: "do_nothing",
+          avatar_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        };
+        expect(user).toEqual(expectedUser);
+      });
+  });
+  test("GET:404 sends an error message when given a non-existent username", () => {
+    return request(app)
+      .get("/api/users/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("user does not exist");
+      });
+  });
+});
+
 describe("/api/articles", () => {
   describe("GET", () => {
     test("GET:200 sends an array of article objects, sorted by date in descending order by default", () => {
