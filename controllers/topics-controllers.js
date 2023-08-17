@@ -1,4 +1,4 @@
-const { selectTopics } = require("../models/topics-models");
+const { selectTopics, insertTopic } = require("../models/topics-models");
 
 exports.getDoc = (request, response, next) => {
   const doc = require(`${__dirname}/../endpoints.json`);
@@ -11,4 +11,8 @@ exports.getTopics = (request, response, next) => {
       response.status(200).send({ topics });
     })
     .catch((err) => next(err));
+};
+
+exports.postTopic = (request, response, next) => {
+  insertTopic;
 };

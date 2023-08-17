@@ -140,6 +140,12 @@
       "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
     }
   },
+  "DELETE /api/articles/:article_id": {
+    "description": "delete specified article from database",
+    "queries": [],
+    "requestFormat": { "path": "/api/articles/1" },
+    "exampleResponse": "no response message"
+  },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of comment objects for the given article_id",
     "queries": ["limit", "p"],

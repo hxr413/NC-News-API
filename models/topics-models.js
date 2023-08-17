@@ -6,3 +6,5 @@ exports.selectTopics = () => {
     return output;
   });
 };
+
+exports.insertTopic = () => {};
