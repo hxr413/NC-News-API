@@ -90,15 +90,14 @@ describe("/api/users/:username", () => {
 
 describe("/api/articles", () => {
   describe("GET", () => {
-    test("GET:200 sends an array of article objects, sorted by date in descending order and limit 10 by default", () => {
+    test("GET:200 sends an array of article objects, sorted by date in descending order by default", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          const { articles, total_count } = body;
+          const { articles } = body;
           expect(articles).toEqual(expect.any(Array));
-          expect(articles.length).toBe(10);
-          expect(total_count).toBe(13);
+          expect(articles.length).toBe(13);
           articles.forEach((article) => {
             expect(Object.keys(article).length).toBe(8);
             expect(article.article_id).toEqual(expect.any(Number));
@@ -177,8 +176,8 @@ describe("/api/articles", () => {
           .get("/api/articles?topic=mitch")
           .expect(200)
           .then(({ body }) => {
-            const { articles, total_count } = body;
-            expect(total_count).toBe(12);
+            const { articles } = body;
+            expect(articles.length).toBe(12);
             articles.forEach((article) => {
               expect(article.topic).toBe("mitch");
             });
@@ -202,15 +201,14 @@ describe("/api/articles", () => {
       });
     });
     describe("GET query pagination(limit, p)", () => {
-      test("GET:200 sends an array of default paginated articles with total_count", () => {
+      test("GET:200 sends an array of paginated articles with default limit", () => {
         return request(app)
-          .get("/api/articles?sort_by=article_id&order=asc")
+          .get("/api/articles?sort_by=article_id&order=asc&p=1")
           .expect(200)
           .then(({ body }) => {
-            const { articles, total_count } = body;
+            const { articles } = body;
             expect(articles.length).toBe(10);
             expect(articles[0].article_id).toBe(1);
-            expect(total_count).toBe(13)
           });
       });
       test("GET:200 sends an array of paginated articles as queried", () => {
@@ -221,16 +219,6 @@ describe("/api/articles", () => {
             const { articles } = body;
             expect(articles.length).toBe(5);
             expect(articles[0].article_id).toBe(6);
-          });
-      });
-      test("GET:200 sends an array of default paginated articles with total_count when applies filters", () => {
-        return request(app)
-          .get("/api/articles?sort_by=article_id&order=asc&topic=mitch&limit=5&p=2")
-          .expect(200)
-          .then(({ body }) => {
-            const { articles, total_count } = body;
-            expect(articles.length).toBe(5);
-            expect(total_count).toBe(12)
           });
       });
       test("GET:200 sends an array of paginated articles with float limit and page", () => {
@@ -583,6 +571,36 @@ describe("/api/articles/:article_id", () => {
       return request(app)
         .patch("/api/articles/1")
         .send({ inc_votes: "fifty" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    /* test.only("DELETE:204 deletes the specified article and its comments, and sends no body back", async () => {
+      const request1 = request(app).delete("/api/articles/1");
+      const request2 =  request(app).get("/api/articles/1");
+      const request3 = db.query("SELECT * FROM comments WHERE article_id = 1;");
+
+      const [response1, response2, response3] = await Promise.all([request1, request2, request3]);
+
+      expect(response1.status).toBe(204);
+      expect(response2.status).toBe(404);
+      expect(response2.body.message).toBe("article does not exist");
+      expect(response3.rows).toEqual([]);
+    }); */
+    test("DELETE:404 responds with an error message when given a non-existent id", () => {
+      return request(app)
+        .delete("/api/articles/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("article does not exist");
+        });
+    });
+    test("DELETE:400 responds with an error message when given an invalid id", () => {
+      return request(app)
+        .delete("/api/articles/invalid")
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("invalid request");

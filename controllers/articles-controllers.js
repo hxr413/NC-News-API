@@ -3,7 +3,9 @@ const {
   insertArticle,
   selectArticleById,
   updateArticleById,
+  removeArticleById,
 } = require("../models/articles-models");
+const { removeCommentsByArticleId } = require("../models/comments-models");
 const { checkExists } = require("../db/utils");
 
 exports.getArticles = (request, response, next) => {
@@ -22,6 +24,7 @@ exports.getArticles = (request, response, next) => {
     response.status(400).send({ message: "invalid query of page" });
   }
 
+  const total_count = request.query.total_count;
   const limit = parseInt(reqLimit) || 10;
   const page = parseInt(reqPage) || 1;
   const offset = (page - 1) * limit;
@@ -37,10 +40,10 @@ exports.getArticles = (request, response, next) => {
   Promise.all(promises)
     .then((resolved) => {
       const allArticles = resolved[num];
-      const paginatedArticles = allArticles.slice(offset, offset + limit);
-      response
-        .status(200)
-        .send({ articles: paginatedArticles, total_count: allArticles.length });
+      if (reqLimit || reqPage) {
+        const paginatedArticles = allArticles.slice(offset, offset + limit);
+        response.status(200).send({ articles: paginatedArticles });
+      } else response.status(200).send({ articles: allArticles });
     })
     .catch((err) => next(err));
 };
@@ -73,5 +76,18 @@ exports.patchArticleById = (request, response, next) => {
     .then((article) => {
       response.status(201).send({ article });
     })
+    .catch((err) => next(err));
+};
+
+exports.deleteArticleById = (request, response, next) => {
+  const { article_id } = request.params;
+
+  const promises = [
+    removeArticleById(article_id),
+    removeCommentsByArticleId(article_id),
+  ];
+
+  Promise.all(promises)
+    .then(() => response.status(204).send())
     .catch((err) => next(err));
 };

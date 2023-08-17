@@ -47,13 +47,14 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["topic", "sort_by", "order"],
+    "queries": ["sort_by", "order", "topic", "limit", "p", "total_count"],
     "requestFormat": {
       "path": [
         "/api/articles",
         "/api/articles?topic=mitch",
         "/api/articles?sort_by=title",
-        "/api/articles??order=desc"
+        "/api/articles?order=desc",
+        "/api/articles?limit=10&p=1"
       ],
       "sort_by": [
         "article_id",

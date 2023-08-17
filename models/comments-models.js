@@ -52,3 +52,7 @@ exports.updateCommentById = (votesChange, id) => {
     return output[0];
   });
 };
+
+exports.removeCommentsByArticleId = (id) => {
+  return db.query("DELETE FROM comments WHERE article_id = $1;", [id]);
+};

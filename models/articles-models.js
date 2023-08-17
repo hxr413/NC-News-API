@@ -103,3 +103,14 @@ exports.updateArticleById = (votesChange, id) => {
     return output[0];
   });
 };
+
+exports.removeArticleById = (id) => {
+  return db
+    .query("DELETE FROM articles WHERE article_id = $1 RETURNING *;", [id])
+    .then((result) => {
+      const output = result.rows[0];
+      if (!output) {
+        return Promise.reject({ status: 404, msg: "article does not exist" });
+      }
+    });
+};
