@@ -11,6 +11,21 @@ exports.getArticles = (request, response, next) => {
   const order = request.query.order || "desc";
   const topic = request.query.topic;
 
+  const reqLimit = request.query.limit;
+  const reqPage = request.query.p;
+
+  if (reqLimit && (isNaN(parseInt(reqLimit)) || reqLimit <= 0)) {
+    response.status(400).send({ message: "invalid query of limit" });
+  }
+
+  if (reqPage && (isNaN(parseInt(reqPage)) || reqPage <= 0)) {
+    response.status(400).send({ message: "invalid query of page" });
+  }
+
+  const limit = parseInt(reqLimit) || 10;
+  const page = parseInt(reqPage) || 1;
+  const offset = (page - 1) * limit;
+
   const promises = [];
   let num = 0;
   if (topic) {
@@ -21,8 +36,11 @@ exports.getArticles = (request, response, next) => {
 
   Promise.all(promises)
     .then((resolved) => {
-      const articles = resolved[num];
-      response.status(200).send({ articles });
+      const allArticles = resolved[num];
+      const paginatedArticles = allArticles.slice(offset, offset + limit);
+      response
+        .status(200)
+        .send({ articles: paginatedArticles, total_count: allArticles.length });
     })
     .catch((err) => next(err));
 };

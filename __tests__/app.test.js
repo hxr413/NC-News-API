@@ -90,14 +90,15 @@ describe("/api/users/:username", () => {
 
 describe("/api/articles", () => {
   describe("GET", () => {
-    test("GET:200 sends an array of article objects, sorted by date in descending order by default", () => {
+    test("GET:200 sends an array of article objects, sorted by date in descending order and limit 10 by default", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          const { articles } = body;
+          const { articles, total_count } = body;
           expect(articles).toEqual(expect.any(Array));
-          expect(articles.length).toBe(13);
+          expect(articles.length).toBe(10);
+          expect(total_count).toBe(13);
           articles.forEach((article) => {
             expect(Object.keys(article).length).toBe(8);
             expect(article.article_id).toEqual(expect.any(Number));
@@ -176,8 +177,8 @@ describe("/api/articles", () => {
           .get("/api/articles?topic=mitch")
           .expect(200)
           .then(({ body }) => {
-            const { articles } = body;
-            expect(articles.length).toBe(12);
+            const { articles, total_count } = body;
+            expect(total_count).toBe(12);
             articles.forEach((article) => {
               expect(article.topic).toBe("mitch");
             });
@@ -200,7 +201,99 @@ describe("/api/articles", () => {
           });
       });
     });
-    // describe("GET query pagination(limit, p, total_count)")
+    describe("GET query pagination(limit, p)", () => {
+      test("GET:200 sends an array of default paginated articles with total_count", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id&order=asc")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles, total_count } = body;
+            expect(articles.length).toBe(10);
+            expect(articles[0].article_id).toBe(1);
+            expect(total_count).toBe(13)
+          });
+      });
+      test("GET:200 sends an array of paginated articles as queried", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id&order=asc&limit=5&p=2")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(5);
+            expect(articles[0].article_id).toBe(6);
+          });
+      });
+      test("GET:200 sends an array of default paginated articles with total_count when applies filters", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id&order=asc&topic=mitch&limit=5&p=2")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles, total_count } = body;
+            expect(articles.length).toBe(5);
+            expect(total_count).toBe(12)
+          });
+      });
+      test("GET:200 sends an array of paginated articles with float limit and page", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id&order=asc&limit=5.5&p=2.5")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(5);
+            expect(articles[0].article_id).toBe(6);
+          });
+      });
+      test("GET:200 sends an empty array when page is beyond available data", () => {
+        return request(app)
+          .get("/api/articles?p=100")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(0);
+          });
+      });
+      test("GET:200 sends an array all articles when limit is greater then total number of articles", () => {
+        return request(app)
+          .get("/api/articles?limit=100")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles.length).toBe(13);
+          });
+      });
+      test("GET:400 sends an error message given an invalid limit (not a number)", () => {
+        return request(app)
+          .get("/api/articles?limit=invalid")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.message).toBe("invalid query of limit");
+          });
+      });
+      test("GET:400 sends an error message given an invalid limit (negative number or 0)", () => {
+        return request(app)
+          .get("/api/articles?limit=-10")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.message).toBe("invalid query of limit");
+          });
+      });
+      test("GET:400 sends an error message given an invalid page (not a number)", () => {
+        return request(app)
+          .get("/api/articles?p=invalid")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.message).toBe("invalid query of page");
+          });
+      });
+      test("GET:400 sends an error message given an invalid page (negative number or 0)", () => {
+        return request(app)
+          .get("/api/articles?p=-1")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.message).toBe("invalid query of page");
+          });
+      });
+    });
   });
   describe("POST", () => {
     test("POST:201 inserts a new article and returns the posted article with comment_comment", () => {

@@ -33,6 +33,18 @@
       ]
     }
   },
+  "GET /api/users/:username": {
+    "description": "serves an user object with specified username",
+    "queries": [],
+    "requestFormat": { "path": "/api/users/lurker" },
+    "exampleResponse": {
+      "users": {
+        "username": "lurker",
+        "name": "do_nothing",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      }
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["topic", "sort_by", "order"],
@@ -40,7 +52,7 @@
       "path": [
         "/api/articles",
         "/api/articles?topic=mitch",
-        "/api/articles?sort_by=date",
+        "/api/articles?sort_by=title",
         "/api/articles??order=desc"
       ],
       "sort_by": [
@@ -68,6 +80,31 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "insert posted article into database and serves the inserted article with comment counts",
+    "queries": [],
+    "requestFormat": {
+      "path": "/api/articles",
+      "request": {
+        "title": "article title",
+        "topic": "a topic in database",
+        "author": "a user in database",
+        "body": "article body",
+        "article_img_url": "https://this.is.optional.com"
+      }
+    },
+    "exampleResponse": {
+      "article_id": 1,
+      "title": "Seafood substitutions are increasing",
+      "topic": "cooking",
+      "author": "weegembump",
+      "body": "Text from the article..",
+      "created_at": "2018-05-30T15:59:13.341Z",
+      "article_img_url": "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+      "votes": 0,
+      "comment_count": 6
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves an article object with specified id",
     "queries": [],
@@ -80,7 +117,8 @@
       "body": "I find this existence challenging",
       "created_at": "2020-07-09T20:11:00.000Z",
       "votes": 100,
-      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "comment_count": 11
     }
   },
   "PATCH /api/articles/:article_id": {
@@ -130,5 +168,21 @@
     "queries": [],
     "requestFormat": { "path": "/api/comments/1" },
     "exampleResponse": "no response message"
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "serves the specified comment object with updated votes",
+    "queries": [],
+    "requestFormat": {
+      "path": "/api/comments/1",
+      "request": { "inc_votes": 5 }
+    },
+    "exampleResponse": {
+      "comment_id": 1,
+      "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      "article_id": 9,
+      "author": "butter_bridge",
+      "votes": 21,
+      "created_at": "2020-04-06T12:17:00.000Z"
+    }
   }
 }
