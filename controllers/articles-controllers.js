@@ -1,5 +1,6 @@
 const {
   selectArticles,
+  insertArticle,
   selectArticleById,
   updateArticleById,
 } = require("../models/articles-models");
@@ -22,6 +23,16 @@ exports.getArticles = (request, response, next) => {
     .then((resolved) => {
       const articles = resolved[num];
       response.status(200).send({ articles });
+    })
+    .catch((err) => next(err));
+};
+
+exports.postArticle = (request, response, next) => {
+  const article = request.body;
+
+  insertArticle(article)
+    .then((article) => {
+      response.status(201).send({ article });
     })
     .catch((err) => next(err));
 };
