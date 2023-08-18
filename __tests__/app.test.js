@@ -41,6 +41,59 @@ describe("/api/topics", () => {
         });
       });
   });
+  describe("POST", () => {
+    test("POST:201 inserts a new topic and returns the posted topic", () => {
+      const testTopic = { description: "test description", slug: "test" };
+      return request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.topic).toEqual(testTopic);
+        });
+    });
+    test("POST:201 inserts a new topic and returns the posted topic when given an topic object with redundant keys", () => {
+      const testTopic = {
+        description: "test description",
+        slug: "test",
+        title: "test title",
+        topic: "mitch",
+        body: "test body",
+      };
+      const expectArticle = { description: "test description", slug: "test" };
+      return request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.topic).toEqual(expectArticle);
+        });
+    });
+    test("POST:400 sends an error message when given a bad topic object(missing keys)", () => {
+      const testTopic = { description: "test description" };
+      return request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
+    test("POST:400 sends an error message when given a bad topic object(wrong keys)", () => {
+      const testTopic = {
+        title: "test title",
+        topic: "test",
+        body: "test body",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("invalid request");
+        });
+    });
+  });
 });
 
 describe("/api/users", () => {

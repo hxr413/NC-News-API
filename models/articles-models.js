@@ -105,13 +105,10 @@ exports.updateArticleById = (votesChange, id) => {
 };
 
 exports.removeArticleById = (id) => {
-  console.log(id, "<<<model")
   return db
     .query("DELETE FROM articles WHERE article_id = $1 RETURNING *;", [id])
     .then((result) => {
       const output = result.rows[0];
-      console.log(result, "result in model")
-      console.log(output, "output in model")
       if (!output) {
         return Promise.reject({ status: 404, msg: "article does not exist" });
       }

@@ -19,6 +19,15 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "insert posted topic into database and serves the inserted topic",
+    "queries": [],
+    "requestFormat": {
+      "path": "/api/topics",
+      "request": { "description": "topic description", "slug": "topic" }
+    },
+    "exampleResponse": { "description": "topic description", "slug": "topic" }
+  },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],

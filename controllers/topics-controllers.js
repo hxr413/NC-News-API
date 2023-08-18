@@ -14,5 +14,11 @@ exports.getTopics = (request, response, next) => {
 };
 
 exports.postTopic = (request, response, next) => {
-  insertTopic;
+  const topic = request.body;
+
+  insertTopic(topic)
+    .then((topic) => {
+      response.status(201).send({ topic });
+    })
+    .catch((err) => next(err));
 };
