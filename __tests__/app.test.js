@@ -577,28 +577,34 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
-  describe.only("DELETE", () => {
+  describe("DELETE", () => {
     test("DELETE:204 deletes the specified article and its comments, and sends no body back", () => {
-      const request1 = request(app).delete("/api/articles/1");
-      const request2 = request(app).get("/api/articles/1");
-      const request3 = db.query("SELECT * FROM comments WHERE article_id = 1;");
-
-      Promise.all([request1, request2, request3]).then((result) => {
-        const response1 = result[0];
-        const response2 = result[1];
-        const response3 = result[2];
-
-        expect(response1.status).toBe(204);
-        expect(response2.status).toBe(404);
-        expect(response2.body.message).toBe("article does not exist");
-        expect(response3.rows).toEqual([]);
-      }); 
+      return request(app)
+        .delete("/api/articles/1")
+        .expect(204)
+        .then(() => {
+          return request(app)
+            .get("/api/articles/1")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.message).toBe("article does not exist");
+            });
+        })
+        .then(() => {
+          return db
+            .query("SELECT * FROM comments WHERE article_id = 1;")
+            .then(({ rows }) => {
+              expect(rows).toEqual([]);
+            });
+        });
     });
     test("DELETE:404 responds with an error message when given a non-existent id", () => {
+      //console.log("test 404, log1");
       return request(app)
         .delete("/api/articles/999")
         .expect(404)
         .then(({ body }) => {
+          //console.log("test 404, log2");
           expect(body.message).toBe("article does not exist");
         });
     });

@@ -83,9 +83,9 @@ exports.deleteArticleById = (request, response, next) => {
   const { article_id } = request.params;
 
   const promises = [
-    removeArticleById(article_id),
     removeCommentsByArticleId(article_id),
-  ];
+    removeArticleById(article_id),
+  ]; 
 
   Promise.all(promises)
     .then(() => response.status(204).send())

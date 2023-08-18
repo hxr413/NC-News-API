@@ -11,7 +11,7 @@ app.use((request, response) => {
 });
 
 app.use((err, request, response, next) => {
-  // console.log(err, "<<<app");
+  console.log(err, "<<<app");
   if (err.status) response.status(err.status).send({ message: err.msg });
   else next(err);
 });
