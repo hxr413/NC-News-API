@@ -8,7 +8,9 @@ exports.selectArticles = (sort, order, topic) => {
     "author",
     "created_at",
     "votes",
+    "comment_count",
   ];
+
   if (!acceptedSort.includes(sort)) {
     return Promise.reject({ status: 400, msg: "invalid query of sort_by" });
   }

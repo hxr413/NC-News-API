@@ -71,7 +71,8 @@
         "topic",
         "author",
         "created_at",
-        "votes"
+        "votes",
+        "comment_count"
       ],
       "order": ["asc", "desc"]
     },
