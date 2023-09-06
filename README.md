@@ -5,7 +5,7 @@
 ### [The hosted version](https://nc-news-api-8tl9.onrender.com/)
 
 ### Description
-This project was developed as part of the Northcoders Software Development Bootcamp course, covering various aspects of backend development, such as creating a server, building RESTful APIs, implementing MVC architecture, retrieving data from database, writing integration tests, handling errors, and deploying to the cloud. 
+This project was developed as part of the Northcoders Software Development Bootcamp course, with a Test Driven Development(TDD) approach. It covers various aspects of backend development, such as creating a server, building RESTful APIs, evaluating endpoints for CRUD operations, implementing MVC architecture, retrieving data from an SQL database, writing integration tests, handling errors, and deploying to the cloud. 
 
 ### Technology & versions used for developemnt
 - Node.js: v20.2.0
@@ -20,6 +20,7 @@ Throughout the development process, version control was managed using Git. This 
 1. **Fork and Clone:**
     - Fork this repository to your GitHub account.
     - Clone your forked repository locally.
+    - Navigate into the repository folder using `cd`.
 
 2. **Install Dependencies:** Run the following command to install all the required dependencies
     ```
