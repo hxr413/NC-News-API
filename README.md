@@ -1,6 +1,6 @@
 # Northcoders News API
 
-**This repository contains the backend for a news application.**
+**This repository contains the back-end for a news application.**
 
 ### [The hosted version](https://nc-news-api-8tl9.onrender.com/)
 
