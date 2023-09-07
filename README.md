@@ -19,7 +19,10 @@ Throughout the development process, version control was managed using Git. This 
 ### Instructions
 1. **Fork and Clone:**
     - Fork this repository to your GitHub account.
-    - Clone your forked repository locally.
+    - Run the following command to clone your forked repository locally.
+      ```
+      git clone <your-forked-repo-url>
+      ```
     - Navigate into the repository folder using `cd`.
 
 2. **Install Dependencies:** Run the following command to install all the required dependencies
